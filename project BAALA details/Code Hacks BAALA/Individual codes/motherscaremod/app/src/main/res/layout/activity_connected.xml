@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@color/colorbase">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/testView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/txtString"
+                android:text=""
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/txtString"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_alignLeft="@+id/testView1"
+                android:layout_alignParentBottom="true"
+                android:text=""
+                android:textSize="15sp" />
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/plot1"
+                android:layout_marginTop="196dp"
+                android:layout_width="match_parent"
+                android:layout_height="350dip"
+                />
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/plot2"
+                android:layout_below="@+id/plot1"
+                android:layout_marginTop="@dimen/text_margin"
+                android:layout_width="match_parent"
+                android:layout_height="350dip"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/floatingActionButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="300dp"
+                android:layout_marginTop="100dp"
+                android:clickable="true"
+                app:srcCompat="@drawable/ic_diet_24dp"
+                android:backgroundTint="@color/colorPrimary"
+                app:borderWidth="0dp"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/floatingActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="400dp"
+                android:layout_marginTop="100dp"
+                android:clickable="true"
+                app:srcCompat="@drawable/ic_access_alarm_black_24dp"
+                android:backgroundTint="@color/colorPrimary"
+                app:borderWidth="0dp"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

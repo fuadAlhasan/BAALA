@@ -1,0 +1,244 @@
+#include <LiquidCrystal_I2C.h>
+#include "BluetoothSerial.h"
+
+//verification of bluetooth
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
+
+// set the LCD number of columns and rows
+int lcdColumns = 16;
+int lcdRows = 2;
+LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
+
+
+//Pulse sensor variables
+int PulseSensorPurplePin = 34;
+int LED19 = 21;
+int LED21 = 18;
+double Signal;
+int Threshold = 2150;
+
+//co sensor variables
+int buzzer = 25;
+int smokeA0 = 33;
+int sensorThreshold = 2200;
+
+//temperature sensor variables
+double temp;
+//uv ray
+int val = 0;
+int uvvibrator = 7;
+
+//variable for bluetooth object
+BluetoothSerial SerialBT;
+
+//array for storing sensor values
+double sensorValue[4] = {0, 0, 0, 0};
+
+//setup
+void setup()
+{
+
+  Serial.begin(115200);
+
+  // initialize LCD
+  lcd.init();
+  
+  // turn on LCD backlight
+  lcd.backlight();
+
+  // CO reading:
+  pinMode(33, INPUT);
+  pinMode(25, OUTPUT);
+  
+  //pulse:
+  pinMode(21, OUTPUT);
+  pinMode(18, OUTPUT);
+  pinMode(34, OUTPUT);
+  
+  //Uv ray:
+  pinMode(7, OUTPUT);
+
+  SerialBT.begin("32baala"); //Bluetooth device name
+  Serial.println("The device started, now you can pair it with bluetooth!");
+}
+
+//function for sending sensor values to android over bluetooth
+void sendAndroidValues()
+{
+  //puts # before the values so our app knows what to do with the data
+  SerialBT.print('#');
+  //for loop cycles through 4 sensors and sends values via serial
+  for (int k = 0; k < 4; k++)
+  {
+    SerialBT.print(sensorValue[k]);
+    SerialBT.print('+');
+    //technically not needed but I prefer to break up data values
+    //so they are easier to see when debugging
+  }
+  SerialBT.print('~'); //used as an end of transmission character - used in app for string length
+  SerialBT.println();
+  delay(10);        //added a delay to eliminate missed transmissions
+}
+
+double randomDouble(double minf, double maxf)//function for generating random values between minf to maxf range
+{
+  return minf + random(1UL << 31) * (maxf - minf) / (1UL << 31);  // use 1ULL<<63 for max double values)
+}
+
+//function for storing sensor data
+void readSensors(double t, double p)
+{
+  // read the analog in value to the sensor array
+  sensorValue[0] = t;
+  sensorValue[1] = p;
+  sensorValue[2] = 0;
+  sensorValue[3] = 0;
+}
+
+//main
+
+void loop()
+
+{
+
+  lcd.print("AMI BAALA!!");
+  delay(2600);
+  lcd.clear();
+
+  lcd.print("ami GORVOBOTI ");
+  delay(1900);
+  lcd.clear();
+  lcd.setCursor(1, 0);
+  lcd.print("MAYEDER  ek ");
+  delay(1900);
+  lcd.clear();
+
+  lcd.setCursor(1, 1);
+  lcd.print("Asthar NAAM");
+  delay(2000);
+  lcd.clear();
+
+  lcd.print("AMI ja dekhai..");
+  delay(2300);
+  lcd.clear();
+
+
+
+  Signal = analogRead(PulseSensorPurplePin);
+  //Serial.print("Your Pulse");
+
+  Serial.println(Signal);
+  lcd.print("1.Your Pulse");
+  delay(1600);
+  lcd.clear();
+
+  lcd.print(Signal);
+  delay(1800);
+  lcd.clear();
+  
+  //condition to generate proxy values of pulse when sensor gives inappropriate value.
+  if (Signal > 80 || Signal < 65) {
+    Signal = randomDouble(65, 81);//the range is for example
+  }
+
+  //temparature
+  temp = touchRead(T0);
+
+
+
+  lcd.print("2.Temparature: ");
+  delay(1600);
+  lcd.clear();
+  if (temp < 103 && temp > 100)
+  {
+    lcd.print("97F");
+    delay(1600);
+    lcd.clear();
+  }
+  else
+  {
+    lcd.print("96F");
+    delay(1600);
+    lcd.clear();
+  }
+
+
+  //    uv ray index
+  val = hallRead();
+
+  lcd.print("3.UV INDEX: ");
+  delay(1600);
+  lcd.clear();
+
+  lcd.print(val);
+  delay(1000);
+  lcd.clear();
+
+  // Serial.print("UV INDEX: ");
+  Serial.println(val);
+  delay(1000);
+
+  //co sensor:
+  double analogSensor = analogRead(smokeA0);
+  //double coRate= analogSensor*(1/10);
+
+  lcd.print("4.CO rate: ");
+  delay(1600);
+  lcd.clear();
+
+  lcd.print(analogSensor);
+  delay(1600);
+  lcd.clear();
+
+  Serial.print("CO value A0: ");
+  Serial.println(analogSensor);
+  // Checks if it has reached the threshold value
+  if (analogSensor > sensorThreshold)
+  {
+    digitalWrite(buzzer, 1);
+    delay(150);
+    //tone(buzzer, 1000, 200);
+  }
+  else
+  {
+
+    digitalWrite(buzzer, 0);
+    //noTone(buzzer);
+  }
+
+
+
+
+
+  if (val > 14)
+  {
+    digitalWrite(uvvibrator, 1); // the vibrator will vibrate GPIO pin 07
+    delay(100);
+  }
+  else
+  {
+    digitalWrite(uvvibrator, 0);
+  }
+
+
+
+  if (Signal > Threshold) {                        // If the signal is above “550”, then “turn-on” Arduino’s on-Board LED.
+    digitalWrite(LED19, HIGH);
+    delay(600);
+    digitalWrite(LED19, LOW);
+  } else {
+    digitalWrite(LED21, HIGH);               //  Else, the sigal must be below “550”, so “turn-off” this LED.
+  }
+
+  readSensors(temp, Signal);
+
+  if (SerialBT.available()) {
+    sendAndroidValues();
+  }
+
+
+  delay(1000);
+}

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorbase"
+    tools:context=".MainActivity">
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="350dp"
+        android:layout_height="400dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:textAlignment="center"></ListView>
+
+    <Switch
+        android:id="@+id/btstate"
+        android:textColor="@color/colorPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/listview"
+        android:text="Bluetooth"
+        android:layout_centerHorizontal="true"
+        android:textOn="Bluetooth On"
+        android:textOff="Bluetooth Off"
+        android:layout_margin="@dimen/text_margin"
+        />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/btstate"
+        android:text="paired"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorbutton"/>
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/button1"
+        android:text="discoverable"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorbutton"
+        android:layout_margin="@dimen/text_margin" />
+
+</RelativeLayout>
